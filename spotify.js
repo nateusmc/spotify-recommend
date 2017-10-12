@@ -1,6 +1,8 @@
+'use strict';
+
 // !!!FILL IN YOUR CLIENT ID FROM YOUR APPLICATION CONSOLE:
 // https://developer.spotify.com/my-applications/#!/applications !!!
-const CLIENT_ID = 'YOUR_ID_HERE';
+const CLIENT_ID = 'e124343d7c1149fa902c18b386fd426f';
 
 const getFromApi = function (endpoint, query = {}) {
   // You won't need to change anything in this function, but you will use this function 
@@ -24,14 +26,33 @@ const getFromApi = function (endpoint, query = {}) {
   });
 };
 
+//
 let artist;
 
 const getArtist = function (name) {
   // Edit me!
   // (Plan to call `getFromApi()` several times over the whole exercise from here!)
+
+  const searchEndpoint = 'search';
+  let querys = {
+    q: name,
+    limit: 1,
+    type: 'artist'
+  };
+
+  return getFromApi(searchEndpoint, querys)
+    .then (item => {
+      console.log(item);
+      artist = item.artists.items[0];
+      //$('h1').html(res.artists.items[0].name);
+      return artist;
+    });
+  // console.log('initially', JSON.stringify(result));
+  // result.then( placeholder =>{
+  //   console.log(placeholder);
+  // });
+  
 };
-
-
 
 
 
