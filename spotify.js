@@ -26,32 +26,35 @@ const getFromApi = function (endpoint, query = {}) {
   });
 };
 
-//
 let artist;
 
-const getArtist = function (name) {
-  // Edit me!
-  // (Plan to call `getFromApi()` several times over the whole exercise from here!)
+//artists/{id}/related-artists
+///artists/{id}/top-tracks
 
+const getArtist = function (name) {
   const searchEndpoint = 'search';
   let querys = {
     q: name,
     limit: 1,
     type: 'artist'
   };
-
+  
   return getFromApi(searchEndpoint, querys)
     .then (item => {
-      console.log(item);
+      console.log('.then 1', item);
       artist = item.artists.items[0];
-      //$('h1').html(res.artists.items[0].name);
+      let artistId = item.artists.items[0].id;
+      //return artist;
+      //console.log(artistId);
+      return getFromApi(`artists/${artistId}/related-artists`);
+    }).then(item => {
+      console.log('.then 2', item.artists);
+      artist.related = item.artists;
+      //console.log('load related', artist.related);
       return artist;
+    }).catch(err => {
+      console.error('Catch Hit!', err);
     });
-  // console.log('initially', JSON.stringify(result));
-  // result.then( placeholder =>{
-  //   console.log(placeholder);
-  // });
-  
 };
 
 
