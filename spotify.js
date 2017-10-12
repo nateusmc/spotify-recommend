@@ -1,13 +1,8 @@
 'use strict';
 
-// !!!FILL IN YOUR CLIENT ID FROM YOUR APPLICATION CONSOLE:
-// https://developer.spotify.com/my-applications/#!/applications !!!
 const CLIENT_ID = 'e124343d7c1149fa902c18b386fd426f';
 
 const getFromApi = function (endpoint, query = {}) {
-  // You won't need to change anything in this function, but you will use this function 
-  // to make calls to Spotify's different API endpoints. Pay close attention to this 
-  // function's two parameters.
 
   const url = new URL(`https://api.spotify.com/v1/${endpoint}`);
   const headers = new Headers();
@@ -28,9 +23,6 @@ const getFromApi = function (endpoint, query = {}) {
 
 let artist;
 
-//artists/{id}/related-artists
-///artists/{id}/top-tracks
-
 const getArtist = function (name) {
   const searchEndpoint = 'search';
   let querys = {
@@ -44,25 +36,29 @@ const getArtist = function (name) {
       console.log('.then 1', item);
       artist = item.artists.items[0];
       let artistId = item.artists.items[0].id;
-      //return artist;
-      //console.log(artistId);
       return getFromApi(`artists/${artistId}/related-artists`);
     }).then(item => {
       console.log('.then 2', item.artists);
       artist.related = item.artists;
-      //console.log('load related', artist.related);
-      return artist;
+      console.log('.then 3', artist);
+      const tracksArr = [];
+      for (let i = 0; i < artist.related.length; i++) {
+        let trackId = artist.related[i].id;
+        tracksArr.push(getFromApi(`artists/${trackId}/top-tracks?country=US`));
+      }
+      let allPromise = Promise.all(tracksArr);
+      return allPromise.then(response => {
+        console.log(response);
+        for (let i =0; i < response.length; i++) {
+          artist.related[i].tracks = response[i].tracks;
+        }
+        return artist;
+      });
     }).catch(err => {
       console.error('Catch Hit!', err);
     });
 };
 
-
-
-// =========================================================================================================
-// IGNORE BELOW THIS LINE - THIS IS RELATED TO SPOTIFY AUTHENTICATION AND IS NOT NECESSARY  
-// TO REVIEW FOR THIS EXERCISE
-// =========================================================================================================
 const login = function () {
   const AUTH_REQUEST_URL = 'https://accounts.spotify.com/authorize';
   const REDIRECT_URI = 'http://localhost:8080/auth.html';
